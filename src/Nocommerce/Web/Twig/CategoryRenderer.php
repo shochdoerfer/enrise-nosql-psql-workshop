@@ -21,9 +21,9 @@ class CategoryRenderer
     public function __invoke()
     {
         $content = '';
-        $content .= '<a href="#" class="list-group-item">Category 1</a>';
-        $content .= '<a href="#" class="list-group-item">Category 2</a>';
-        $content .= '<a href="#" class="list-group-item">Category 3</a>';
+        $content .= '<a href="/browse/Category1" class="list-group-item">Category 1</a>';
+        $content .= '<a href="/browse/Category2" class="list-group-item">Category 2</a>';
+        $content .= '<a href="/browse/Category2" class="list-group-item">Category 3</a>';
 
         return $content;
     }
