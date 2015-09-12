@@ -1,0 +1,42 @@
+{% extends "layout.twig" %}
+
+{% block sidebar %}
+    <div class="list-group">
+        {{ categories()|raw }}
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if vendors %}
+        <div class="vendor col-sm-9 col-lg-9 col-md-9">
+            <ul class="nav nav-pills">
+                <li><span>Vendors:</span></li>
+                {% for vendor in vendors %}
+                    <li role="presentation"><a href="{{ baseUrl }}?vendor={{ vendor.company }}">{{ vendor.company }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {% if products %}
+        {% for product in products %}
+            <div class="product col-sm-4 col-lg-4 col-md-4">
+                <div class="thumbnail">
+                    <img src="http://placehold.it/320x150" alt="{{ product.name }}">
+
+                    <div class="caption">
+                        <h4 class="pull-right">{{ product.price }}&euro;</h4>
+                        <h4><a href="#">{{ product.name }}</a></h4>
+                        <p>{{ product.description }}</p>
+                    </div>
+
+                    <div class="ratings" data-productId="{{ product.id }}">
+                        {% if product.rating %}
+                            {% include 'ratings.twig' with {'rating': product.rating}  %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

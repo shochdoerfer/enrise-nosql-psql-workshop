@@ -12,6 +12,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Nocommerce\Web\ShopControllerProvider;
+use Nocommerce\Web\Twig\NocommerceTwigExtension;
 use Silex\Application;
 
 $app = new Application();
@@ -20,9 +21,10 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__.'/../views',
 ]);
 
-$app->get('/', function (Application $app) {
-    return $app['twig']->render('layout.twig');
-});
+$app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
+    $twig->addExtension(new NocommerceTwigExtension());
+    return $twig;
+}));
 
 $app->mount('/', new ShopControllerProvider());
 
