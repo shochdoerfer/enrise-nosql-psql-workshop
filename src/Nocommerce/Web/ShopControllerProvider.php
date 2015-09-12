@@ -8,7 +8,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Nocommerce\Web;
 
 use Silex\Application;
@@ -28,7 +27,7 @@ class ShopControllerProvider implements ControllerProviderInterface
         $controllers = $app['controllers_factory'];
 
         $controllers->get('/', function (Application $app) {
-            return $app['twig']->render('layout.twig');
+            return $app['twig']->render('index.twig');
         });
 
         return $controllers;

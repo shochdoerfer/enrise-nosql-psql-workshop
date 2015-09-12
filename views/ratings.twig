@@ -1,0 +1,8 @@
+<p class="pull-right">{{ rating.cnt }} reviews</p>
+
+<p class="rating">
+    {% set real_rating = rating.rating / rating.cnt %}
+    {% for i in 0..5 %}
+        <span class="glyphicon {% if i <= real_rating  %}glyphicon-star{% else %}glyphicon-star-empty{% endif %}" data-rating="{{ i }}"></span>
+    {% endfor %}
+</p>
