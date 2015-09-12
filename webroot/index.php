@@ -15,8 +15,12 @@ use Silex\Application;
 
 $app = new Application();
 
-$app->get('/', function () {
-    return 'Nocommerce';
+$app->register(new Silex\Provider\TwigServiceProvider(), [
+    'twig.path' => __DIR__.'/../views',
+]);
+
+$app->get('/', function (Application $app) {
+    return $app['twig']->render('layout.twig');
 });
 
 $app->run();
