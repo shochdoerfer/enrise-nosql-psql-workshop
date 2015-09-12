@@ -7,18 +7,18 @@
 {% endblock %}
 
 {% block content %}
-    {% if vendors %}
+    {% if vendors is defined %}
         <div class="vendor col-sm-9 col-lg-9 col-md-9">
             <ul class="nav nav-pills">
                 <li><span>Vendors:</span></li>
                 {% for vendor in vendors %}
-                    <li role="presentation"><a href="{{ baseUrl }}?vendor={{ vendor.company }}">{{ vendor.company }}</a></li>
+                    <li role="presentation"><a href="#?vendor={{ vendor.company }}">{{ vendor.company }}</a></li>
                 {% endfor %}
             </ul>
         </div>
     {% endif %}
 
-    {% if products %}
+    {% if products is defined %}
         {% for product in products %}
             <div class="product col-sm-4 col-lg-4 col-md-4">
                 <div class="thumbnail">
@@ -31,7 +31,7 @@
                     </div>
 
                     <div class="ratings" data-productId="{{ product.id }}">
-                        {% if product.rating %}
+                        {% if product.rating is defined %}
                             {% include 'ratings.twig' with {'rating': product.rating}  %}
                         {% endif %}
                     </div>
