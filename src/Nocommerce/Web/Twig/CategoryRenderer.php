@@ -10,11 +10,28 @@
  */
 namespace Nocommerce\Web\Twig;
 
+use Doctrine\DBAL\Connection;
+
 /**
  * Category sidebar renderer.
  */
 class CategoryRenderer
 {
+    /**
+     * @var Connection
+     */
+    protected $db;
+
+    /**
+     * Creates a new {@link \Nocommerce\Twig\CategoryProvider}.
+     *
+     * @param Connection $db
+     */
+    public function __construct(Connection $db)
+    {
+        $this->db = $db;
+    }
+
     /**
      * {{@inheritDoc}}
      */

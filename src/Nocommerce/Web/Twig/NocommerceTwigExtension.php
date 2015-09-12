@@ -10,12 +10,28 @@
  */
 namespace Nocommerce\Web\Twig;
 
+use Doctrine\DBAL\Connection;
 use Silex\Application;
 use Twig_Extension;
 use Twig_SimpleFunction;
 
 class NocommerceTwigExtension extends Twig_Extension
 {
+    /**
+     * @var Connection
+     */
+    protected $db;
+
+    /**
+     * Creates a new {@link \Nocommerce\Twig\StoreTwigExtension}.
+     *
+     * @param Application $app
+     */
+    public function __construct(Application $app)
+    {
+        $this->db = $app['db'];
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -30,7 +46,7 @@ class NocommerceTwigExtension extends Twig_Extension
     public function getFunctions()
     {
         return array(
-            new Twig_SimpleFunction('categories', new CategoryRenderer()),
+            new Twig_SimpleFunction('categories', new CategoryRenderer($this->db)),
         );
     }
 }
