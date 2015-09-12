@@ -11,6 +11,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Nocommerce\Web\ApiControllerProvider;
 use Nocommerce\Web\ShopControllerProvider;
 use Nocommerce\Web\Twig\NocommerceTwigExtension;
 use Silex\Application;
@@ -26,6 +27,7 @@ $app['twig'] = $app->share($app->extend('twig', function($twig, $app) {
     return $twig;
 }));
 
+$app->mount('/api', new ApiControllerProvider());
 $app->mount('/', new ShopControllerProvider());
 
 $app->run();
