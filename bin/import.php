@@ -12,5 +12,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$cli = new \Nocommerce\Cli\Application(new \Nocommerce\Cli\Command\ImportCommand());
+use Nocommerce\Cli\Application;
+use Nocommerce\Cli\Command\ImportCommand;
+
+$cli = new Application(new ImportCommand());
 $cli->run();
