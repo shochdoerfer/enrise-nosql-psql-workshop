@@ -30,6 +30,22 @@ class ShopControllerProvider implements ControllerProviderInterface
             return $app['twig']->render('index.twig');
         });
 
+        $controllers->get('/browse/{category}', function (Application $app) {
+
+            return $app['twig']->render('index.twig');
+        });
+
+        $controllers->post('/search', function (Application $app) {
+
+            return $app['twig']->render('index.twig');
+        });
+
+        $controllers->post('/rate', function (Application $app) {
+            $rating = ['cnt' => 0, 'rating' => 0];
+
+            return $app['twig']->render('ratings.twig', ['rating' => $rating]);
+        });
+
         return $controllers;
     }
 }
