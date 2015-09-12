@@ -11,6 +11,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Nocommerce\Web\ShopControllerProvider;
 use Silex\Application;
 
 $app = new Application();
@@ -22,5 +23,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
 $app->get('/', function (Application $app) {
     return $app['twig']->render('layout.twig');
 });
+
+$app->mount('/', new ShopControllerProvider());
 
 $app->run();
