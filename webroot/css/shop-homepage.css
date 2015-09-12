@@ -8,17 +8,17 @@ body {
     padding-top: 70px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
 }
 
-.slide-image {
-    width: 100%;
+nav .navbar-header .input-group {
+    padding-top: 10px;
 }
 
-.carousel-holder {
-    margin-bottom: 30px;
+.vendor {
+    margin-bottom: 10px;
 }
 
-.carousel-control,
-.item {
-    border-radius: 4px;
+.vendor li span {
+    display:block;
+    padding: 10px 0px;
 }
 
 .caption {
