@@ -1,0 +1,12 @@
+<?php
+
+return [
+    'debug' => false,
+    'database' => [
+        'host'     => '127.0.0.1',
+        'port'     => 5432,
+        'username' => 'nocommerce',
+        'password' => 'nocommerce',
+        'schema' => 'nocommerce'
+    ]
+];

@@ -58,4 +58,32 @@ class ImportCommand extends Command
             }
         }
     }
+
+    /**
+     * Returns configured {@link \Doctrine\DBAL\Connection}.
+     *
+     * @return Connection
+     */
+    protected function getDatabaseConnection()
+    {
+        $app = new Application();
+
+        $app->register(new ConfigServiceProvider(__DIR__ . '/../../../../config/config.php'));
+
+        $app->register(
+            new DoctrineServiceProvider(),
+            [
+                'db.options' => [
+                    'driver' => 'pdo_pgsql',
+                    'host' => $app['database']['host'],
+                    'dbname' => $app['database']['schema'],
+                    'user' => $app['database']['username'],
+                    'password' => $app['database']['password'],
+                    'port' => $app['database']['port']
+                ]
+            ]
+        );
+
+        return $app['db'];
+    }
 }
