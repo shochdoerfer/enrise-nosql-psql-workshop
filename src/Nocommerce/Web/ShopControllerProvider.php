@@ -27,6 +27,18 @@ class ShopControllerProvider implements ControllerProviderInterface
         // creates a new controller based on the default route
         $controllers = $app['controllers_factory'];
 
+        // helper function to json_decode rating and meta fields
+        $decodeJsonAttributes = function (array $products) {
+            // "converting" the json strings for rating and meta into native php datatypes
+            foreach ($products as $key => $product) {
+                $product['rating'] = json_decode($product['rating']);
+                $product['meta'] = json_decode($product['meta']);
+                $products[$key] = $product;
+            }
+
+            return $products;
+        };
+
         $controllers->get('/', function (Application $app) {
             $sql = 'SELECT "id", "name", "description", "price", "categories" FROM "products"';
             $products = $app['db']->fetchAll($sql);
