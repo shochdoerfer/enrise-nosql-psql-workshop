@@ -71,9 +71,32 @@ class ShopControllerProvider implements ControllerProviderInterface
 
         });
 
-        $controllers->post('/rate', function (Application $app) use ($decodeJsonAttributes) {
-            $rating = ['cnt' => 0, 'rating' => 0];
+        $controllers->post('/rate', function (Application $app, Request $request) use ($decodeJsonAttributes) {
+            $productId = (int) $request->get('productId');
+            $rating = $request->get('rating');
 
+            // Update rating count
+            $sql = 'UPDATE "products" SET "rating" = jsonb_set("rating", \'{"cnt"}\', CAST((CAST("rating"->>\'cnt\' as integer) + 1) as text)::JSONB) WHERE "id" = ?;';
+            $stmt = $app['db']->prepare($sql);
+            $stmt->bindValue(1, $productId, 'integer');
+            $stmt->execute();
+
+            // Update rating total
+            $sql = 'UPDATE "products" SET "rating" = jsonb_set("rating", \'{"rating"}\', CAST((CAST("rating"->>\'rating\' as integer) + ?) as text)::JSONB) WHERE "id" = ?;';
+            $stmt = $app['db']->prepare($sql);
+            $stmt->bindValue(1, $rating, 'integer');
+            $stmt->bindValue(2, $productId, 'integer');
+            $stmt->execute();
+
+            // Read the "latest" rating to return it
+            $sql = 'SELECT "rating" FROM "products" WHERE "id" = ?';
+            $stmt = $app['db']->prepare($sql);
+            $stmt->bindValue(1, $productId, 'integer');
+            $stmt->execute();
+            $rating = $stmt->fetch();
+            $rating = json_decode($rating['rating']);
+
+            // render HTML for the ajax response
             return $app['twig']->render('ratings.twig', ['rating' => $rating]);
         });
 
