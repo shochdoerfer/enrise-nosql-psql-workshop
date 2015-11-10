@@ -51,11 +51,61 @@ class ImportCommand extends Command
             return;
         }
 
+        $db = $this->getDatabaseConnection();
         $products = simplexml_load_file($file);
         if (false !== $products) {
             foreach ($products as $product) {
+                /** @var SimpleXmlElement $product */
+                $attributes = (array) $product->attributes();
+                $attributes = isset($attributes['@attributes']) ? $attributes['@attributes'] : [];
+                $categories = [];
+                foreach ($product->category as $category) {
+                    /** @var SimpleXmlElement $category */
+                    $categories[] = (string) $category['name'];
+                }
 
+                $id = isset($attributes['id']) ? $attributes['id'] : '';
+                $name = isset($attributes['name']) ? $attributes['name'] : '';
+                $description = isset($attributes['description']) ? $attributes['description'] : '';
+                $price = isset($attributes['price']) ? $attributes['price'] : '';
+                unset($attributes['id'], $attributes['name'], $attributes['description'], $attributes['price']);
+
+                // type juggeling
+                foreach ($attributes as $key => $value) {
+                    if (is_numeric($value)) {
+                        $value = floatval($value);
+                        if (round($value, 0) == $value) {
+                            $value = intval($value);
+                        }
+                    } else {
+                        $valueLower = strtolower($value);
+                        if ('true' === $valueLower) {
+                            $value = true;
+                        } elseif ('false' === $valueLower) {
+                            $value = false;
+                        }
+                    }
+                    $attributes[$key] = $value;
+                }
+
+                $sql = 'INSERT INTO "products" ("id", "name", "description", "price", "rating", "meta", "categories") VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT ON CONSTRAINT products_pkey DO UPDATE SET "name" = EXCLUDED.name, "description" = EXCLUDED.description, "price" = EXCLUDED.price, "rating" = EXCLUDED.rating, "meta" = EXCLUDED.meta, "categories" = EXCLUDED.categories;';
+                $stmt = $db->prepare($sql);
+                $stmt->bindValue(1, $id, 'integer');
+                $stmt->bindValue(2, $name, 'string');
+                $stmt->bindValue(3, $description, 'string');
+                $stmt->bindValue(4, $price, 'float');
+                $stmt->bindValue(5, json_encode(['cnt' => 0, 'rating' => 0]), 'string');
+                $stmt->bindValue(6, json_encode($attributes), 'string');
+                $stmt->bindValue(7, sprintf("{%s}", implode(',', $categories)), 'string');
+                $stmt->execute();
             }
+
+            // ignore any existing entry in the redis db!
+            $sql = 'INSERT INTO "imports" ("filename", "contents") VALUES (?, ?) ON CONFLICT DO NOTHING;';
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(1, $file, 'string');
+            $stmt->bindValue(2, file_get_contents($file), 'string');
+            $stmt->execute();
         }
     }
 
