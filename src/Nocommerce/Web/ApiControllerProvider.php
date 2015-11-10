@@ -37,7 +37,16 @@ class ApiControllerProvider implements ControllerProviderInterface
         });
 
         $controllers->get('/product/{productId}', function (Application $app, $productId) {
-            return $app->json([]);
+            $sql = 'SELECT row_to_json("products") as formatted_json FROM "products" WHERE "id" = ?';
+            $stmt = $app['db']->prepare($sql);
+            $stmt->bindValue(1, $productId, 'integer');
+            $stmt->execute();
+            $json = $stmt->fetchColumn();
+            if(!$json) {
+                $json = '{}';
+            }
+
+            return $json;
         });
 
         return $controllers;
