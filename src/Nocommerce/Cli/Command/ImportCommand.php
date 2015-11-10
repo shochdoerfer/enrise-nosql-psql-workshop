@@ -88,15 +88,21 @@ class ImportCommand extends Command
                     $attributes[$key] = $value;
                 }
 
-                $sql = 'INSERT INTO "products" ("id", "name", "description", "price", "rating", "meta", "categories") VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT ON CONSTRAINT products_pkey DO UPDATE SET "name" = EXCLUDED.name, "description" = EXCLUDED.description, "price" = EXCLUDED.price, "rating" = EXCLUDED.rating, "meta" = EXCLUDED.meta, "categories" = EXCLUDED.categories;';
+                $sql = 'INSERT INTO "products" ("id", "name", "description", "price","meta", "categories") VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT ON CONSTRAINT products_pkey DO UPDATE SET "name" = EXCLUDED.name, "description" = EXCLUDED.description, "price" = EXCLUDED.price, "meta" = EXCLUDED.meta, "categories" = EXCLUDED.categories;';
                 $stmt = $db->prepare($sql);
                 $stmt->bindValue(1, $id, 'integer');
                 $stmt->bindValue(2, $name, 'string');
                 $stmt->bindValue(3, $description, 'string');
                 $stmt->bindValue(4, $price, 'float');
-                $stmt->bindValue(5, json_encode(['cnt' => 0, 'rating' => 0]), 'string');
-                $stmt->bindValue(6, json_encode($attributes), 'string');
-                $stmt->bindValue(7, sprintf("{%s}", implode(',', $categories)), 'string');
+                $stmt->bindValue(5, json_encode($attributes), 'string');
+                $stmt->bindValue(6, sprintf("{%s}", implode(',', $categories)), 'string');
+                $stmt->execute();
+
+                // ON CONFLICT DO NOTHING seems to be ignored for foreign tables!
+                $sql = 'INSERT INTO "redis_db0" ("key", "value") VALUES (?, ?) ON CONFLICT DO NOTHING;';
+                $stmt = $db->prepare($sql);
+                $stmt->bindValue(1, $id, 'integer');
+                $stmt->bindValue(2, json_encode(['cnt' => 0, 'rating' => 0]), 'string');
                 $stmt->execute();
             }
 
