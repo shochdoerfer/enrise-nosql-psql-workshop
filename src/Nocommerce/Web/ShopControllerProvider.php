@@ -40,7 +40,7 @@ class ShopControllerProvider implements ControllerProviderInterface
         };
 
         $controllers->get('/', function (Application $app) use ($decodeJsonAttributes) {
-            $sql = 'SELECT "id", "name", "description", "price", "categories", "rating", "meta", CASE WHEN "rating"->>\'cnt\' != \'\' AND CAST("rating"->>\'cnt\' as int) > 0 THEN CAST("rating"->>\'rating\' as int) / CAST("rating"->>\'cnt\' as int) ELSE 0 END AS "r" FROM "products" ORDER BY "r" DESC;';
+            $sql = 'SELECT "p"."id", "p"."name", "p"."description", "p"."price", "p"."categories", "p"."rating", "p"."meta", "v"."url", CASE WHEN "rating"->>\'cnt\' != \'\' AND CAST("rating"->>\'cnt\' as int) > 0 THEN CAST("rating"->>\'rating\' as int) / CAST("rating"->>\'cnt\' as int) ELSE 0 END AS "r" FROM "products" "p" LEFT JOIN "vendor" "v" ON "p"."meta"->>\'vendor\' = "v"."name" ORDER BY "r" DESC;';
             $products = $app['db']->fetchAll($sql);
             $products = $decodeJsonAttributes($products);
 
@@ -48,7 +48,7 @@ class ShopControllerProvider implements ControllerProviderInterface
         });
 
         $controllers->get('/browse/{category}', function (Application $app, $category) use ($decodeJsonAttributes) {
-            $sql = 'SELECT "id", "name", "description", "price", "categories", "rating", "meta", CASE WHEN "rating"->>\'cnt\' != \'\' AND CAST("rating"->>\'cnt\' as int) > 0 THEN CAST("rating"->>\'rating\' as int) / CAST("rating"->>\'cnt\' as int) ELSE 0 END AS "r" FROM "products" WHERE "categories" @> ARRAY[?] ORDER BY "r" DESC;';
+            $sql = 'SELECT "p"."id", "p"."name", "p"."description", "p"."price", "p"."categories", "p"."rating", "p"."meta", "v"."url", CASE WHEN "rating"->>\'cnt\' != \'\' AND CAST("rating"->>\'cnt\' as int) > 0 THEN CAST("rating"->>\'rating\' as int) / CAST("rating"->>\'cnt\' as int) ELSE 0 END AS "r" FROM "products" "p" LEFT JOIN "vendor" "v" ON "p"."meta"->>\'vendor\' = "v"."name" WHERE "categories" @> ARRAY[?] ORDER BY "r" DESC;';
             $stmt = $app['db']->prepare($sql);
             $stmt->bindValue(1, $category, 'string');
             $stmt->execute();
