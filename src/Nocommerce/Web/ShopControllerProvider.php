@@ -40,7 +40,7 @@ class ShopControllerProvider implements ControllerProviderInterface
         };
 
         $controllers->get('/', function (Application $app) use ($decodeJsonAttributes) {
-            $sql = 'SELECT "id", "name", "description", "price", "categories", "rating", "meta" FROM "products"';
+            $sql = 'SELECT "id", "name", "description", "price", "categories", "rating", "meta", CASE WHEN "rating"->>\'cnt\' != \'\' AND CAST("rating"->>\'cnt\' as int) > 0 THEN CAST("rating"->>\'rating\' as int) / CAST("rating"->>\'cnt\' as int) ELSE 0 END AS "r" FROM "products" ORDER BY "r" DESC;';
             $products = $app['db']->fetchAll($sql);
             $products = $decodeJsonAttributes($products);
 
@@ -48,7 +48,7 @@ class ShopControllerProvider implements ControllerProviderInterface
         });
 
         $controllers->get('/browse/{category}', function (Application $app, $category) use ($decodeJsonAttributes) {
-            $sql = 'SELECT "id", "name", "description", "price", "categories", "rating", "meta" FROM "products" WHERE "categories" @> ARRAY[?]';
+            $sql = 'SELECT "id", "name", "description", "price", "categories", "rating", "meta", CASE WHEN "rating"->>\'cnt\' != \'\' AND CAST("rating"->>\'cnt\' as int) > 0 THEN CAST("rating"->>\'rating\' as int) / CAST("rating"->>\'cnt\' as int) ELSE 0 END AS "r" FROM "products" WHERE "categories" @> ARRAY[?] ORDER BY "r" DESC;';
             $stmt = $app['db']->prepare($sql);
             $stmt->bindValue(1, $category, 'string');
             $stmt->execute();
