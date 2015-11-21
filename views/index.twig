@@ -27,7 +27,12 @@
                     <div class="caption">
                         <h4 class="pull-right">{{ product.price }}&euro;</h4>
                         <h4><a href="#">{{ product.name }}</a></h4>
-                        <p>{{ product.description }}<br /><br />{{ product.url }}</p>
+                        <p>
+                            {{ product.description }}
+                            {% if product.url is defined %}
+                                <br /><br /><a href="{{ product.url }}">{{ product.url }}</a>
+                            {% endif %}
+                        </p>
                     </div>
 
                     <div class="ratings" data-productId="{{ product.id }}">
