@@ -38,6 +38,15 @@ class CategoryRenderer
     public function __invoke()
     {
         $content = '';
+        $sql = '';
+        // $categories = $this->db->fetchAll($sql);
+        $categories = [];
+
+        foreach($categories as $category) {
+            $content .= '<a href="/browse/'.htmlentities($category['title']).'" class="list-group-item">'.$category['title'].' ('.$category['cnt'].')</a>';
+        }
+
+        $content = '';
         $content .= '<a href="/browse/Category1" class="list-group-item">Category 1</a>';
         $content .= '<a href="/browse/Category2" class="list-group-item">Category 2</a>';
         $content .= '<a href="/browse/Category2" class="list-group-item">Category 3</a>';
