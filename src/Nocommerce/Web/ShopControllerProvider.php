@@ -12,6 +12,7 @@ namespace Nocommerce\Web;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Controller Provider for the default shop functionality.
@@ -43,9 +44,11 @@ class ShopControllerProvider implements ControllerProviderInterface
             return $app['twig']->render('index.twig', ['products' => $products]);
         });
 
-        $controllers->post('/search', function (Application $app) {
+        $controllers->post('/search', function (Application $app, Request $request) {
+            $query = $request->get('query');
+            $products = [];
 
-            return $app['twig']->render('index.twig');
+            return $app['twig']->render('index.twig', ['products' => $products]);
         });
 
         $controllers->post('/rate', function (Application $app) {
