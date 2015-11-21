@@ -1,0 +1,31 @@
+<?xml version='1.0' standalone='yes'?>
+<products>
+    <product id="1" name="Lenovo YOGA Tablet" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="179.00" vendor="Lenovo" instock="true" ram="2GB" display="1920x1200" weight="600">
+        <category name="Tablets" />
+    </product>
+    <product id="2" name="Lenovo Tablet S8-50" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="229.00" vendor="Lenovo"  ram="2GB" display="1920x1200" weight="300">
+        <category name="Tablets" />
+    </product>
+    <product id="3" name="Acer Aspire Switch 10" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="279.00" vendor="Acer" instock="true" ram="2GB" display="1280x800" weight="1160">
+        <category name="Tablets" />
+    </product>
+    <product id="4" name="Asus Transformer Book" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="199.00" vendor="Asus" instock="true" ram="1GB" display="1366x768" weight="1000">
+        <category name="Tablets" />
+        <category name="Notebook" />
+    </product>
+    <product id="5" name="DELL Inspiron 17 5749" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="729.00" vendor="Dell" instock="true">
+        <category name="Notebook" />
+    </product>
+    <product id="6" name="Acer Docking Station" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="188.80" vendor="Acer" instock="true">
+        <category name="Addons" />
+    </product>
+    <product id="7" name="ASUS Blue-Ray Brenner" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="128.80" vendor="Asus" instock="true">
+        <category name="Addons" />
+    </product>
+    <product id="8" name="Acer mini Displayport" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="21.00" vendor="Acer" instock="true">
+        <category name="Addons" />
+    </product>
+    <product id="9" name="Acer 40 Watt Netzteil" description="This is a short description. Lorem ipsum dolor sit amet, consectetur adipiscing elit." price="39.90" vendor="Acer">
+        <category name="Addons" />
+    </product>
+</products>
