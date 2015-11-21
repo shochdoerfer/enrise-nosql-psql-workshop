@@ -71,7 +71,9 @@ class ShopControllerProvider implements ControllerProviderInterface
 
         });
 
-        $controllers->post('/rate', function (Application $app) use ($decodeJsonAttributes) {
+        $controllers->post('/rate', function (Application $app, Request $request) use ($decodeJsonAttributes) {
+            $productId = (int) $request->get('productId');
+            $rating = $request->get('rating');
             $rating = ['cnt' => 0, 'rating' => 0];
 
             return $app['twig']->render('ratings.twig', ['rating' => $rating]);
