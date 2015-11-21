@@ -106,7 +106,7 @@ class ImportCommand extends Command
                 $stmt->execute();
             }
 
-            // ignore any existing entry in the redis db!
+            // ignore any existing entry
             $sql = 'INSERT INTO "imports" ("filename", "contents") VALUES (?, ?) ON CONFLICT DO NOTHING;';
             $stmt = $db->prepare($sql);
             $stmt->bindValue(1, $file, 'string');
