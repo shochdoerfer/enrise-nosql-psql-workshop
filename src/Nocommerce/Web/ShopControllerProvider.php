@@ -27,12 +27,22 @@ class ShopControllerProvider implements ControllerProviderInterface
         $controllers = $app['controllers_factory'];
 
         $controllers->get('/', function (Application $app) {
-            return $app['twig']->render('index.twig');
+            $sql = '';
+            // $products = $app['db']->fetchAll($sql);
+            $products = [];
+
+            return $app['twig']->render('index.twig', ['products' => $products]);
         });
 
-        $controllers->get('/browse/{category}', function (Application $app) {
+        $controllers->get('/browse/{category}', function (Application $app, $category) {
+            $sql = '';
+            // $stmt = $app['db']->prepare($sql);
+            // $stmt->bindValue(1, $category, 'string');
+            // $stmt->execute();
+            // $products = $stmt->fetchAll();
+            $products = [];
 
-            return $app['twig']->render('index.twig');
+            return $app['twig']->render('index.twig', ['products' => $products]);
         });
 
         $controllers->post('/search', function (Application $app) {
