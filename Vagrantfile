@@ -1,20 +1,20 @@
 VAGRANTFILE_API_VERSION = "2"
 
-Vagrant.require_version ">= 1.7.1"
+Vagrant.require_version ">= 1.8.0"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    # Fix for "stdin: is not a tty" msg which appears during provisioning
+    # fix for "stdin: is not a tty" msg which appears during provisioning
     # see https://github.com/mitchellh/vagrant/issues/1673
     config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    config.ssh.username = "vagrant"
+    config.ssh.password = "vagrant"
 
-    # Enable vagrant-cachier plugin if plugin is installed
+    # enable vagrant-cachier plugin if plugin is installed
     if Vagrant.has_plugin?("vagrant-cachier")
        config.cache.scope = :box
        config.cache.enable :apt
        config.cache.enable :apt_lists
-       config.cache.enable :composer
     end
 
-    # Optimize performance
     # https://stefanwrobel.com/how-to-make-vagrant-performance-not-suck
     config.vm.provider "virtualbox" do |v|
       host = RbConfig::CONFIG['host_os']
@@ -36,21 +36,55 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
       v.customize ["modifyvm", :id, "--memory", mem]
       v.customize ["modifyvm", :id, "--cpus", cpus]
+
+      # disable USB since it prevents the machine to start 
+      # when not having installed the non-commercial USB extension
+      v.customize ["modifyvm", :id, "--usb", "off"]
+      v.customize ["modifyvm", :id, "--usbehci", "off"]
+
+      # enable linked clone support for faster provisioning 
+      # (needs Vagrant >= 1.8.0)
+      v.linked_clone = true
     end
 
-    # Configure the virtual machine
-    config.vm.define "jessie" do |jessie|
-        jessie.vm.box      = 'psql-nosql-workshop-jessie32'
-        jessie.vm.hostname = "psql-workshop"
+    config.vm.define "trusty" do |trusty|
+      trusty.vm.box = 'ubuntu/trusty64'
 
-        # Share an additional folder to the guest VM. The first argument is
-        # an identifier, the second is the path on the guest to mount the
-        # folder, and the third is the path on the host to the actual folder.
-        jessie.vm.synced_folder ".", "/vagrant", owner: "vagrant", group: "vagrant"
+      # Expose PostgreSQL port
+      trusty.vm.network :forwarded_port, guest: 5432, host: 8432
 
-        # Forward PostgreSQL port from guest to host
-        jessie.vm.network :forwarded_port, guest: 5432, host: 5432
-        # Forward web server port from guest to host
-        jessie.vm.network :forwarded_port, guest: 8080, host: 8080
+      # Expose Webserver port
+      trusty.vm.network :forwarded_port, guest: 8080, host: 8080
+
+      trusty.vm.provision "shell", inline: <<-SHELL
+          # install PostgreSQL
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          sudo apt-get install wget ca-certificates git
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update && sudo apt-get install -yq --no-install-recommends postgresql-9.5 postgresql-client-9.5 postgresql-contrib-9.5 postgresql-server-dev-9.5 
+          # install Redis
+          sudo apt-get install -yq --no-install-recommends redis-server libhiredis-dev
+          # install PHP
+          sudo apt-get install -yq --no-install-recommends php5-cli php5-pgsql php5-json php5-redis
+          # install npm & bower
+          curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+          sudo apt-get install -yq --no-install-recommends git nodejs
+          sudo npm install -g bower
+          # install composer
+          cd /usr/local/bin
+          php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+          php -r "if (hash_file('SHA384', 'composer-setup.php') === 'aa96f26c2b67226a324c27919f1eb05f21c248b987e6195cad9690d5c1ff713d53020a02ac8c217dbf90a7eacc9d141d') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+          php composer-setup.php;
+          php -r "unlink('composer-setup.php');"
+
+          # let PostgreSQL listen on all devices
+          sed -i "s|.*listen_addresses.*|listen_addresses = '*'|g" /etc/postgresql/9.5/main/postgresql.conf
+
+          # allow access also from local machine
+          echo "host    all          all         10.0.2.2/24      md5" >> /etc/postgresql/9.5/main/pg_hba.conf
+
+          # restart PostgreSQL service
+          service postgresql restart
+      SHELL
     end
 end
